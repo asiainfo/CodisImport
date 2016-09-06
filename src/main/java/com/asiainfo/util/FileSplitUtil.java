@@ -15,7 +15,7 @@ import java.util.concurrent.*;
 public class FileSplitUtil {
     private final static Logger log = LogManager.getLogger(FileSplitUtil.class);
 
-    public List<String> splitBySize(String fileName, String outputPath, int byteSize)
+    public List<String> splitBySize(String fileName, String outputPath, long byteSize)
             throws IOException, InterruptedException {
         List<String> parts = new ArrayList();
         File file = new File(fileName);
@@ -28,13 +28,13 @@ public class FileSplitUtil {
         for (int i = 0; i < count; i++) {
             String partFileName = outputPath + File.separator + file.getName() + "-"
                     + leftPad((i + 1) + "", countLen, '0');
-            int readSize=byteSize;
+            long readSize = byteSize;
             long startPos=(long)i * byteSize;
             long nextPos=(long)(i+1) * byteSize;
             if(nextPos>totalLen){
                 readSize= (int) (totalLen-startPos);
             }
-            new SplitRunnable(readSize, startPos, partFileName, file, latch).run();
+            new Thread(new SplitRunnable(readSize, startPos, partFileName, file, latch)).start();
             parts.add(partFileName);
         }
         latch.await();
@@ -143,22 +143,22 @@ public class FileSplitUtil {
         return new String(chs);
     }
 
-    public int getBlockFileSize(long fileSize){
-        int x = 2;
-        long result = Integer.MAX_VALUE;
-        long tmp = 0;
+    public long getBlockFileSize(long fileSize){
+        long x = 2;
+        long result = 0;
+
         while(true){
             if(x == fileSize){
-                tmp = x;
+                result = x;
                 break;
             }if(x < fileSize){
-                tmp = x;
+                result = x;
                 x = 2 * x;
             }else{
                 break;
             }
         }
-        return (int)(tmp > result ? result : tmp);
+        return result;
     }
 
 }

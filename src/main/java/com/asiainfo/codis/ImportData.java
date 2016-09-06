@@ -52,9 +52,9 @@ public class ImportData {
 
                             if (sourceFile.length() >= fileSize) {
                                 FileSplitUtil fileSplitUtil = new FileSplitUtil();
-                                int blockSize = fileSplitUtil.getBlockFileSize(fileSize);
-                                logger.info("The block size is " + blockSize);
-                                List<String> parts = fileSplitUtil.splitBySize(sourceFile.getAbsolutePath(), outputDir.getAbsolutePath(), blockSize);
+                                long partitionSize = fileSplitUtil.getBlockFileSize(fileSize);
+                                logger.info("The partition size is " + partitionSize);
+                                List<String> parts = fileSplitUtil.splitBySize(sourceFile.getAbsolutePath(), outputDir.getAbsolutePath(), partitionSize);
                                 for (String part : parts) {
                                     logger.info("partName is:" + part);
                                 }
