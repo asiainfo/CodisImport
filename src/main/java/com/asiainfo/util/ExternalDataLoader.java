@@ -1,6 +1,10 @@
 package com.asiainfo.util;
 
+import com.asiainfo.codis.schema.CodisHash;
 import com.asiainfo.codis.schema.DataSchema;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.LineIterator;
 import org.apache.commons.lang3.StringUtils;
@@ -42,23 +46,39 @@ public class ExternalDataLoader {
 //    }
 
 
-    public static List<DataSchema> loadSchema(String filePath) {
-        List<DataSchema> result = new ArrayList();
+//    public static List<DataSchema> loadSchema(String filePath) {
+//        List<DataSchema> result = new ArrayList();
+//
+//        Properties properties = new Properties();
+//
+//        try {
+//            properties.load(new FileInputStream(filePath));
+//            Enumeration<?> e = properties.propertyNames();
+//            while (e.hasMoreElements()) {
+//                String key = (String) e.nextElement();
+//                String value = properties.getProperty(key);
+//                result.add(generateSchema(key, value));
+//            }
+//
+//        } catch (IOException ie) {
+//            logger.error("Can't read configuration file " + filePath, ie);
+//        }
+//
+//        return result;
+//    }
 
-        Properties properties = new Properties();
+    public static List<CodisHash> loadSchema(String filePath) {
+        List<CodisHash> result = new ArrayList();
+
+
+        Gson gson = new GsonBuilder().create();
 
         try {
-            properties.load(new FileInputStream(filePath));
-            Enumeration<?> e = properties.propertyNames();
-            while (e.hasMoreElements()) {
-                String key = (String) e.nextElement();
-                String value = properties.getProperty(key);
-                result.add(generateSchema(key, value));
-            }
-
-        } catch (IOException ie) {
-            logger.error("Can't read configuration file " + filePath, ie);
+            result = gson.fromJson(FileUtils.readFileToString(new File(filePath), "UTF-8"), new TypeToken<List<CodisHash>>() {}.getType());
+        } catch (IOException e) {
+            logger.error(e);
         }
+
 
         return result;
     }
@@ -131,7 +151,7 @@ public class ExternalDataLoader {
 
         List<String> lines = FileUtils.readLines(new File("/Users/peng/SandBox/Dev/Stream/CodisImport/conf/schema.properties"), "UTF-8");
 
-        for (String ling : lines){
+        for (String ling : lines) {
             System.out.println(ling + "===");
         }
 

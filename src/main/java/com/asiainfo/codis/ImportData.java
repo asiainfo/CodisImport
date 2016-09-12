@@ -2,6 +2,7 @@ package com.asiainfo.codis;
 
 import com.asiainfo.codis.client.ClientToCodis;
 import com.asiainfo.codis.client.ClientToCodisHelper;
+import com.asiainfo.codis.schema.CodisHash;
 import com.asiainfo.codis.schema.DataSchema;
 import com.asiainfo.conf.CodisConfiguration;
 import com.asiainfo.util.ExternalDataLoader;
@@ -24,21 +25,23 @@ public class ImportData {
     private static Logger logger = Logger.getLogger(CodisConfiguration.class);
 
     public static void main(String[] args) {
-        if (args.length != 1) {
-            System.err.println("Usage: ImportData <schema configuration path>");
-            System.exit(1);
-        }
-
-        String schemaPath = StringUtils.trimToEmpty(args[0]);
-
-        if (!new File(schemaPath).exists()){
-            System.err.println("Can not find file '" + schemaPath + "'.");
-            System.exit(2);
-        }
+//        if (args.length != 1) {
+//            System.err.println("Usage: ImportData <schema configuration path>");
+//            System.exit(1);
+//        }
+//
+//        String schemaPath = StringUtils.trimToEmpty(args[0]);
+//
+//        if (!new File(schemaPath).exists()){
+//            System.err.println("Can not find file '" + schemaPath + "'.");
+//            System.exit(2);
+//        }
 
         DOMConfigurator.configure(CodisConfiguration.CONF_DIR + "log4j.xml");
 
-        List<DataSchema> schemaList = ExternalDataLoader.loadSchema(CodisConfiguration.CONF_DIR + File.separator + "schema.properties");
+        //List<DataSchema> schemaList = ExternalDataLoader.loadSchema(CodisConfiguration.CONF_DIR + File.separator + "schema.properties");
+        List<CodisHash> codisHashList = ExternalDataLoader.loadSchema(CodisConfiguration.CONF_DIR + File.separator + "schema.json");
+
         String inputDirStr = StringUtils.trimToEmpty(CodisConfiguration.getProperty().getProperty(CodisConfiguration.CODIS_INPUT_FILE_PATH));
 
         if (CodisConfiguration.getBoolean(CodisConfiguration.SPLIT_FILE_ENABLE, CodisConfiguration.DEFAULT_SPLIT_FILE_ENABLE)) {
@@ -54,30 +57,29 @@ public class ImportData {
                         outputDir.mkdir();
                     }
 
+                    for (CodisHash codisHash : codisHashList){
+                        for (String tableName : codisHash.getSourceTableSchema().keySet()){
+                            for (String fileName : inputDir.list(new PrefixFileFilter(tableName))) {
 
-                    for (DataSchema dataSchema : schemaList) {
+                                File sourceFile = new File(inputDirStr + File.separator + fileName);
+                                long fileSize = CodisConfiguration.getLong(CodisConfiguration.CODIS_MAXIMUM_OPERATION_BYTE, CodisConfiguration.DEFAULT_CODIS_MAXIMUM_OPERATION_BYTE);
 
-                        for (String fileName : inputDir.list(new PrefixFileFilter(dataSchema.getTableName()))) {
-
-                            File sourceFile = new File(inputDirStr + File.separator + fileName);
-                            long fileSize = CodisConfiguration.getLong(CodisConfiguration.CODIS_MAXIMUM_OPERATION_BYTE, CodisConfiguration.DEFAULT_CODIS_MAXIMUM_OPERATION_BYTE);
-
-                            if (sourceFile.length() >= fileSize) {
-                                FileSplitUtil fileSplitUtil = new FileSplitUtil();
-                                long partitionSize = fileSplitUtil.getBlockFileSize(fileSize);
-                                logger.info("The partition size is " + partitionSize);
-                                List<String> parts = fileSplitUtil.splitBySize(sourceFile.getAbsolutePath(), outputDir.getAbsolutePath(), partitionSize);
-                                for (String part : parts) {
-                                    logger.info("partName is:" + part);
+                                if (sourceFile.length() >= fileSize) {
+                                    FileSplitUtil fileSplitUtil = new FileSplitUtil();
+                                    long partitionSize = fileSplitUtil.getBlockFileSize(fileSize);
+                                    logger.info("The partition size is " + partitionSize);
+                                    List<String> parts = fileSplitUtil.splitBySize(sourceFile.getAbsolutePath(), outputDir.getAbsolutePath(), partitionSize);
+                                    for (String part : parts) {
+                                        logger.info("partName is:" + part);
+                                    }
+                                } else {
+                                    FileUtils.copyFileToDirectory(sourceFile, outputDir);
                                 }
-                            } else {
-                                FileUtils.copyFileToDirectory(sourceFile, outputDir);
+
+                                logger.info("File size is " + sourceFile.length() + ", take " + (System.currentTimeMillis() - start) + " ms to split this file.");
+
                             }
-
-                            logger.info("File size is " + sourceFile.length() + ", take " + (System.currentTimeMillis() - start) + " ms to split this file.");
-
                         }
-
                     }
 
                 }
@@ -88,7 +90,7 @@ public class ImportData {
             }
         }
 
-        new ClientToCodis(schemaList, inputDirStr + File.separator + "output").sendData();
+        new ClientToCodis(codisHashList, inputDirStr).sendData();
 
     }
 }

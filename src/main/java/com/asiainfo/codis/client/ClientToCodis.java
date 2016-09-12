@@ -1,5 +1,6 @@
 package com.asiainfo.codis.client;
 
+import com.asiainfo.codis.schema.CodisHash;
 import com.asiainfo.codis.schema.DataSchema;
 import com.asiainfo.conf.CodisConfiguration;
 import org.apache.commons.io.FileUtils;
@@ -8,6 +9,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.log4j.Logger;
 import redis.clients.jedis.*;
+import redis.clients.util.Hashing;
+import redis.clients.util.Sharded;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,17 +26,18 @@ public class ClientToCodis {
     private Logger logger = Logger.getLogger(ClientToCodis.class);
     private JedisPoolConfig config = new JedisPoolConfig();
 
-    private List<DataSchema> schemaList;
+    //private List<DataSchema> schemaList;
+    private List<CodisHash> codisHashList;
     private String inputDataPath;
 
-    public ClientToCodis(List<DataSchema> schemaList, String inputDataPath) {
-        this.schemaList = schemaList;
+    public ClientToCodis(List<CodisHash> codisHashList, String inputDataPath) {
+        this.codisHashList = codisHashList;
         this.inputDataPath = inputDataPath;
         init();
     }
 
     public void sendData() {
-        if (!new File(inputDataPath).exists()){
+        if (!new File(inputDataPath).exists()) {
             logger.error("Can not find any input data since <" + inputDataPath + "> did not exist.");
             return;
         }
@@ -58,23 +62,26 @@ public class ClientToCodis {
 
         try {
 
-            for (DataSchema dataSchema : schemaList) { // TODO multi thread ?
+            //=========
+            File dir = FileUtils.getFile(inputDataPath);
+            for (CodisHash codisHash : codisHashList) {
 
-                File dir = FileUtils.getFile(inputDataPath);
+                for (String tableName : codisHash.getSourceTableSchema().keySet()) {
 
-                for (String fileName : dir.list(new PrefixFileFilter(dataSchema.getTableName()))) {
-                    List<String> dataList = FileUtils.readLines(new File(inputDataPath + File.separator + fileName), "UTF-8");
-
-                    fjpool.execute(new ClientToCodisHelper(dataList, dataSchema, pool, 0, dataList.size() - 1));
-
+                    for (String fileName : dir.list(new PrefixFileFilter(tableName))) {
+                        List<String> dataList = FileUtils.readLines(new File(inputDataPath + File.separator + fileName), "UTF-8");
+                        fjpool.execute(new ClientToCodisHelper(dataList, codisHash, tableName, pool, 0, dataList.size() - 1));
+                    }
                 }
 
             }
 
+            //=======
+
             fjpool.shutdown();
 
             while (!fjpool.awaitTermination(CodisConfiguration.getLong(CodisConfiguration.CODIS_CLIENT_LIVENESS_MONITOR_EXPIRY_INTERVAL_MS, CodisConfiguration.DEFAULT_CODIS_CLIENT_LIVENESS_MONITOR_EXPIRY_INTERVAL_MS), TimeUnit.MILLISECONDS)) {
-                logger.debug("There are <" +fjpool.getParallelism() + "> threads running at the same time.");
+                logger.debug("There are <" + fjpool.getParallelism() + "> threads running at the same time.");
                 logger.info("Left <" + (fjpool.getRunningThreadCount()) + "> running thread.");
             }
 
