@@ -26,7 +26,6 @@ public class ClientToCodis {
     private Logger logger = Logger.getLogger(ClientToCodis.class);
     private JedisPoolConfig config = new JedisPoolConfig();
 
-    //private List<DataSchema> schemaList;
     private List<CodisHash> codisHashList;
     private String inputDataPath;
 
@@ -61,8 +60,6 @@ public class ClientToCodis {
         ForkJoinPool fjpool = new ForkJoinPool(CodisConfiguration.getInt(CodisConfiguration.CODIS_CLIENT_THREAD_COUNT, CodisConfiguration.DEFAULT_CODIS_CLIENT_THREAD_COUNT));
 
         try {
-
-            //=========
             File dir = FileUtils.getFile(inputDataPath);
             for (CodisHash codisHash : codisHashList) {
 
@@ -75,8 +72,6 @@ public class ClientToCodis {
                 }
 
             }
-
-            //=======
 
             fjpool.shutdown();
 

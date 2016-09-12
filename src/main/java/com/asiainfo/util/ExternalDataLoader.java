@@ -19,54 +19,6 @@ import java.util.Properties;
 public class ExternalDataLoader {
     private static Logger logger = Logger.getLogger(ExternalDataLoader.class);
 
-//    public static List<String> loadData(String filePath) {
-//        List<String> result = new ArrayList<>();
-//        File file = new File(filePath);
-//        BufferedReader reader = null;
-//        try {
-//            reader = new BufferedReader(new FileReader(file));
-//            String tempString;
-//
-//            while ((tempString = reader.readLine()) != null) {
-//                result.add(tempString);
-//            }
-//            reader.close();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        } finally {
-//            if (reader != null) {
-//                try {
-//                    reader.close();
-//                } catch (IOException e1) {
-//                }
-//            }
-//        }
-//
-//        return result;
-//    }
-
-
-//    public static List<DataSchema> loadSchema(String filePath) {
-//        List<DataSchema> result = new ArrayList();
-//
-//        Properties properties = new Properties();
-//
-//        try {
-//            properties.load(new FileInputStream(filePath));
-//            Enumeration<?> e = properties.propertyNames();
-//            while (e.hasMoreElements()) {
-//                String key = (String) e.nextElement();
-//                String value = properties.getProperty(key);
-//                result.add(generateSchema(key, value));
-//            }
-//
-//        } catch (IOException ie) {
-//            logger.error("Can't read configuration file " + filePath, ie);
-//        }
-//
-//        return result;
-//    }
-
     public static List<CodisHash> loadSchema(String filePath) {
         List<CodisHash> result = new ArrayList();
 

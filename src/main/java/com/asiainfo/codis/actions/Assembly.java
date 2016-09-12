@@ -36,7 +36,7 @@ public abstract class Assembly {
 
 
     public String getKey(){
-        logger.info("key:" + codisHashKey);
+        logger.debug("key:" + codisHashKey);
         return codisHashKey;
     }
 

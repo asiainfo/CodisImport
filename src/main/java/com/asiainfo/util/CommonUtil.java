@@ -20,15 +20,4 @@ public class CommonUtil {
     public static String arrayToString(String[] array, String separator){
         return listToString(Arrays.asList(array), separator);
     }
-
-
-    public static void main(String[] args) {
-//        List<String> aa = new ArrayList<>();
-//
-//        aa.add("a");
-//        aa.add("b");
-//
-//        System.out.println(listToString(aa));
-
-    }
 }

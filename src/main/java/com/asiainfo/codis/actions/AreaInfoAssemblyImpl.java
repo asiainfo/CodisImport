@@ -1,6 +1,7 @@
 package com.asiainfo.codis.actions;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,6 +10,7 @@ import java.util.Map;
  * Created by peng on 16/9/9.
  */
 public class AreaInfoAssemblyImpl extends MultiAssemblyImpl {
+    private static Logger logger = Logger.getLogger(AreaInfoAssemblyImpl.class);
     @Override
     public Map<String, String> getMap() {
         HashMap<String, String> values = new HashMap();
@@ -31,7 +33,7 @@ public class AreaInfoAssemblyImpl extends MultiAssemblyImpl {
             }
         }
 
-        System.out.println(values);
+        logger.debug("Area info values : " + values);
 
         return values;
     }

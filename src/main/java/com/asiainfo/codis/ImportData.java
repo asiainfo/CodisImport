@@ -25,26 +25,26 @@ public class ImportData {
     private static Logger logger = Logger.getLogger(CodisConfiguration.class);
 
     public static void main(String[] args) {
-//        if (args.length != 1) {
-//            System.err.println("Usage: ImportData <schema configuration path>");
-//            System.exit(1);
-//        }
-//
-//        String schemaPath = StringUtils.trimToEmpty(args[0]);
-//
-//        if (!new File(schemaPath).exists()){
-//            System.err.println("Can not find file '" + schemaPath + "'.");
-//            System.exit(2);
-//        }
+        if (args.length != 1) {
+            System.err.println("Usage: ImportData <schema configuration path>");
+            System.exit(1);
+        }
+
+        String schemaPath = StringUtils.trimToEmpty(args[0]);
+
+        if (!new File(schemaPath).exists()){
+            System.err.println("Can not find file '" + schemaPath + "'.");
+            System.exit(2);
+        }
 
         DOMConfigurator.configure(CodisConfiguration.CONF_DIR + "log4j.xml");
 
-        //List<DataSchema> schemaList = ExternalDataLoader.loadSchema(CodisConfiguration.CONF_DIR + File.separator + "schema.properties");
         List<CodisHash> codisHashList = ExternalDataLoader.loadSchema(CodisConfiguration.CONF_DIR + File.separator + "schema.json");
 
         String inputDirStr = StringUtils.trimToEmpty(CodisConfiguration.getProperty().getProperty(CodisConfiguration.CODIS_INPUT_FILE_PATH));
 
         if (CodisConfiguration.getBoolean(CodisConfiguration.SPLIT_FILE_ENABLE, CodisConfiguration.DEFAULT_SPLIT_FILE_ENABLE)) {
+            logger.info("Start to split source table data...");
             long start = System.currentTimeMillis();
             try {
 

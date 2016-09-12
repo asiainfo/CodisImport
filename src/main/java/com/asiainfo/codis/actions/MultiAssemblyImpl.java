@@ -20,6 +20,7 @@ public class MultiAssemblyImpl extends Assembly {
         super.row = row;
 
         if (codisHash.getForeignKeys().length < 2) {
+            logger.error("The number of foreignkeys are less than two.");
             return false;
 
         }
@@ -27,8 +28,8 @@ public class MultiAssemblyImpl extends Assembly {
         String codisHashKeyPostfix = getCodisHashKeyPostfix(codisHash.getForeignKeys());
         if (codisHashKeyPostfix != null){
             codisHashKey = codisHash.getKeyPrefix() + ":" + codisHashKeyPostfix;
-        }else {
-
+        }
+        else {
             return false;
         }
 
