@@ -27,7 +27,15 @@ public class AreaInfoAssemblyImpl extends MultiAssemblyImpl {
                     }else if (StringUtils.startsWithIgnoreCase(hashValue, "B")){
                         values.put("tour_area", hashValue);
                     }
-                }else{
+                }
+                else if (hashKey.equals("sub_area_code") ){
+                    if (StringUtils.startsWithIgnoreCase(hashValue, "A")){
+                        values.put("security_sub_area", hashValue);
+                    }else if (StringUtils.startsWithIgnoreCase(hashValue, "B")){
+                        values.put("tour_sub_area", hashValue);
+                    }
+                }
+                else{
                     values.put(hashKey, hashValue);
                 }
             }
