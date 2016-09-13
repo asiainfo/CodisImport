@@ -24,7 +24,7 @@ public class SingleForeignKeysAssemblyImpl extends Assembly {
 
         String codisHashKeyPostfix = getTargetValue(codisHash.getForeignKeys()[0]);
         if (codisHashKeyPostfix != null){
-            codisHashKey = codisHash.getKeyPrefix() + ":" + codisHashKeyPostfix;
+            super.codisHashKey = codisHash.getKeyPrefix() + ":" + codisHashKeyPostfix;
         }else {
             return false;
         }

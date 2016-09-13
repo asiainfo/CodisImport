@@ -27,7 +27,7 @@ public class MultiAssemblyImpl extends Assembly {
 
         String codisHashKeyPostfix = getCodisHashKeyPostfix(codisHash.getForeignKeys());
         if (codisHashKeyPostfix != null){
-            codisHashKey = codisHash.getKeyPrefix() + ":" + codisHashKeyPostfix;
+            super.codisHashKey = codisHash.getKeyPrefix() + ":" + codisHashKeyPostfix;
         }
         else {
             return false;
@@ -40,17 +40,17 @@ public class MultiAssemblyImpl extends Assembly {
     protected String getCodisHashKeyPostfix(String[] headers) {
         StringBuffer bs = new StringBuffer();
         for (String header : headers){
-            int index = codisHash.getSourceTableSchema().get(sourceTableName).indexOf(header);
+            int index = super.codisHash.getSourceTableSchema().get(super.sourceTableName).indexOf(header);
             if (index < 0){
-                logger.warn("Can not find '" + header + "' from '" + codisHash.getSourceTableSchema().get(sourceTableName) + "'");
+                logger.warn("Can not find '" + header + "' from '" + super.codisHash.getSourceTableSchema().get(super.sourceTableName) + "'");
                 return null;
             }
 
-            bs.append(row[index].trim()).append(codisHash.getForeignKeysSeparator());
+            bs.append(super.row[index].trim()).append(super.codisHash.getForeignKeysSeparator());
 
         }
 
-        return StringUtils.removeEnd(bs.toString(), codisHash.getForeignKeysSeparator());
+        return StringUtils.removeEnd(bs.toString(), super.codisHash.getForeignKeysSeparator());
     }
 
 }

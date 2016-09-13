@@ -14,7 +14,7 @@ public class AreaInfoAssemblyImpl extends MultiAssemblyImpl {
     @Override
     public Map<String, String> getMap() {
         HashMap<String, String> values = new HashMap();
-        String[] hashKeys = codisHash.getHashKeys();
+        String[] hashKeys = super.codisHash.getHashKeys();
 
         for (int j = 0; j < hashKeys.length; j++) {
             String hashKey = hashKeys[j].trim();
@@ -22,17 +22,18 @@ public class AreaInfoAssemblyImpl extends MultiAssemblyImpl {
             if (hashValue != null) {
 
                 if (hashKey.equals("area_code") ){
-                    if (StringUtils.startsWithIgnoreCase(hashValue, "A")){
-                        values.put("security_area", hashValue);
-                    }else if (StringUtils.startsWithIgnoreCase(hashValue, "B")){
+                    if (StringUtils.startsWithIgnoreCase(hashValue, "B")){
                         values.put("tour_area", hashValue);
+                    }else {
+                        continue;
                     }
                 }
                 else if (hashKey.equals("sub_area_code") ){
                     if (StringUtils.startsWithIgnoreCase(hashValue, "A")){
                         values.put("security_sub_area", hashValue);
-                    }else if (StringUtils.startsWithIgnoreCase(hashValue, "B")){
-                        values.put("tour_sub_area", hashValue);
+                    }
+                    else {
+                        continue;
                     }
                 }
                 else{

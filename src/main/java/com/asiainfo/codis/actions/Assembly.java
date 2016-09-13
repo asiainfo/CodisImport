@@ -29,7 +29,7 @@ public abstract class Assembly {
             }
         }
 
-        System.out.println(values);
+        logger.debug("The values:" + values);
 
         return values;
     }
@@ -44,7 +44,7 @@ public abstract class Assembly {
         int index = codisHash.getSourceTableSchema().get(sourceTableName).indexOf(header);
 
         if (index < 0){
-            logger.warn("Can not find '" + header + "' from '" + codisHash.getSourceTableSchema().get(sourceTableName) + "'");
+            logger.debug("Can not find '" + header + "' from '" + codisHash.getSourceTableSchema().get(sourceTableName) + "'");
             return null;
         }
         return row[index].trim();
