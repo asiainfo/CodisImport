@@ -4,10 +4,10 @@ import com.asiainfo.codis.schema.CodisHash;
 import org.apache.log4j.Logger;
 
 /**
- * Created by peng on 16/9/9.
+ * 这个类只处理在foreignKeys中只配置了一个字段的情况
+ *
  */
 public class SingleForeignKeysAssemblyImpl extends Assembly {
-    private String codisHashKey;
     private Logger logger = Logger.getLogger(SingleForeignKeysAssemblyImpl.class);
 
     @Override
@@ -22,10 +22,11 @@ public class SingleForeignKeysAssemblyImpl extends Assembly {
         }
 
 
-        String codisHashKeyPostfix = getTargetValue(codisHash.getForeignKeys()[0]);
+        String codisHashKeyPostfix = getColumnValueFromSourceTableRow(codisHash.getForeignKeys()[0]);
         if (codisHashKeyPostfix != null){
-            super.codisHashKey = codisHash.getKeyPrefix() + ":" + codisHashKeyPostfix;
+            super.codisHashKey = codisHash.getKeyPrefix() + super.codisHash.getKeySeparator() + codisHashKeyPostfix;
         }else {
+            logger.error("Can not find the column '" + codisHash.getForeignKeys()[0] + "' from table '" + super.sourceTableName + "'");
             return false;
         }
 
