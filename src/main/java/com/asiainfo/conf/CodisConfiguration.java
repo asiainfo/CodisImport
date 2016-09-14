@@ -20,7 +20,7 @@ public class CodisConfiguration {
     public final static String CODIS_CLIENT_THREAD_COUNT = "codis.client.thread-count";
     public static int DEFAULT_CODIS_CLIENT_THREAD_COUNT = 1;
     public final static String CODIS_CLIENT_LIVENESS_MONITOR_EXPIRY_INTERVAL_MS = "codis.client.liveness-monitor.expiry-interval-ms";
-    public final static long DEFAULT_CODIS_CLIENT_LIVENESS_MONITOR_EXPIRY_INTERVAL_MS = 1000;
+    public final static long DEFAULT_CODIS_CLIENT_LIVENESS_MONITOR_EXPIRY_INTERVAL_MS = 10000;
     public final static String CODIS_MAXIMUM_OPERATION_BYTE = "codis.maximum-operation-byte";
     public final static long DEFAULT_CODIS_MAXIMUM_OPERATION_BYTE = 1024 * 1024 * 1024; //1M
     public final static String SPLIT_FILE_ENABLE = "split.file.enable";

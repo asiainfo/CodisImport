@@ -12,6 +12,7 @@ import redis.clients.jedis.*;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.RecursiveAction;
 
 /**
@@ -50,56 +51,63 @@ public class ClientToCodisHelper extends RecursiveAction {
 
             this.invokeAll(left, right);
 
-        }
-        else {
+        } else {
             ShardedJedis shardedJedis = jedisPool.getResource();
             ShardedJedisPipeline pipeline = shardedJedis.pipelined();
             int brokenRowNum = 0;
 
+            logger.debug("Start from " + start + " to " + end + " in " + sourceTableName);
+
             for (int i = start; i <= end; i++) {
+
                 String[] row = dataList.get(i).split(CodisConfiguration.DEFAULT_SEPARATOR);
 
-                if (row.length != codisHash.getSourceTableSchema().get(sourceTableName).size()){
+                if (row.length != codisHash.getSourceTableSchema().get(sourceTableName).size()) {
                     logger.warn("The row<" + dataList.get(i) + "> is invalid.");
                     brokenRowNum++;
                     continue;
                 }
 
-                Assembly assembly = null;
+                Assembly assembly;
                 try {
                     Class newoneClass = null;
-                    if (StringUtils.isNotEmpty(codisHash.getHandlerClass())){
+                    if (StringUtils.isNotEmpty(codisHash.getHandlerClass())) {
                         newoneClass = Class.forName(codisHash.getHandlerClass());
-                    }else {
-                        if (codisHash.getForeignKeys().length == 1){
+                    } else {
+                        if (codisHash.getForeignKeys().length == 1) {
                             newoneClass = Class.forName(CodisHash.SIGLE_FOREIGN_KEY_HADLE_CLASS);
-                        }else if (codisHash.getForeignKeys().length > 1){
+                        } else if (codisHash.getForeignKeys().length > 1) {
                             newoneClass = Class.forName(CodisHash.MULTI_FOREIGN_KEY_HADLE_CLASS);
-                        }else {
+                        } else {
                             logger.error("Can not determine handle class");
                             System.exit(9);
                         }
                     }
 
-                                        assembly = (Assembly) newoneClass.newInstance();
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                } catch (InstantiationException e) {
-                    e.printStackTrace();
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
+                    assembly = (Assembly) newoneClass.newInstance();
+
+
+                    if (assembly != null && assembly.execute(codisHash, sourceTableName, row)) {
+                        Map<String, Map<String, String>> hmset = assembly.getHmset();
+
+                        for (Map.Entry<String, Map<String, String>> entry : hmset.entrySet()) {
+                            String hmsetKey = entry.getKey();
+                            Map<String, String> hmsetValue = entry.getValue();
+                            shardedJedis.hmset(hmsetKey, hmsetValue);
+                        }
+
+                    } else {
+                        logger.error("Unknown error, please check schema configuration.");
+                    }
+
+                } catch (Exception e) {
+                    logger.error(e);
                 }
 
-                if (assembly != null && assembly.execute(codisHash, sourceTableName, row)){
-                    shardedJedis.hmset(assembly.getKey(), assembly.getMap());
-                }
-                else {
-                    logger.error("Unknown error, please check schema.json.");
-                }
-
-            }
+            }// end of for
 
             logger.debug("There are " + (end - start - brokenRowNum + 1) + " rows had been sent to codis.");
+
 
             pipeline.syncAndReturnAll();
             shardedJedis.close();

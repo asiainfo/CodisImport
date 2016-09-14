@@ -14,11 +14,11 @@ public class AreaInfoAssemblyImpl extends MultiAssemblyImpl {
     @Override
     public Map<String, String> getMap() {
         HashMap<String, String> values = new HashMap();
-        String[] hashKeys = super.codisHash.getHashKeys();
+        String[] hashKeys = super.codisHash.getHashFields();
 
         for (int j = 0; j < hashKeys.length; j++) {
             String hashKey = hashKeys[j].trim();
-            String hashValue = getTargetValue(hashKey);
+            String hashValue = getColumnValueFromSourceTableRow(hashKey);
             if (hashValue != null) {
 
                 if (hashKey.equals("area_code") ){

@@ -17,7 +17,7 @@ public class CodisHash {
 
     private Map<String, List<String>> sourceTableSchema; //name, header
 
-    private String[] hashKeys;
+    private String[] hashFields;
 
     private String handlerClass;
 
@@ -60,8 +60,8 @@ public class CodisHash {
         this.sourceTableSchema = sourceTableSchema;
     }
 
-    public void setHashKeys(String[] hashKeys) {
-        this.hashKeys = hashKeys;
+    public void setHashFields(String[] hashFields) {
+        this.hashFields = hashFields;
     }
 
     public void setHandlerClass(String handlerClass) {
@@ -74,7 +74,7 @@ public class CodisHash {
                 "keyPrefix='" + keyPrefix + '\'' +
                 ", foreignKeys=" + Arrays.toString(foreignKeys) +
                 ", sourceTableSchema=" + sourceTableSchema +
-                ", hashKeys=" + Arrays.toString(hashKeys) +
+                ", hashKeys=" + Arrays.toString(hashFields) +
                 ", handlerClass='" + handlerClass + '\'' +
                 '}';
     }
@@ -87,8 +87,8 @@ public class CodisHash {
         return sourceTableSchema;
     }
 
-    public String[] getHashKeys() {
-        return hashKeys;
+    public String[] getHashFields() {
+        return hashFields;
     }
 
     public String getHandlerClass() {
@@ -97,5 +97,9 @@ public class CodisHash {
 
     public String getForeignKeysSeparator() {
         return foreignKeysSeparator;
+    }
+
+    public String getKeySeparator() {
+        return keySeparator;
     }
 }

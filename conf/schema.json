@@ -1,13 +1,11 @@
 [
   {
-    "keyPrefix": "okuser_base_info",
-    "foreignKeys": ["imsi", "live_lac"],
+    "keyPrefix": "city_info",
+    "foreignKeys": ["imsi"],
     "sourceTableSchema": {
-      "TP_IMSI_LIVE_WORK_MON": ["acyc_id","imsi","live_lac","area_code","work_lac","work_cellid"],
-      "TP_IMSI_USER_INFO_DAY": ["stat_date","imsi","serial_number","age_level","sex","eparchy_id","city_code","pspt_prov_code","pspt_eparchy_id","fee_level"]
+      "TD_IMSI_SEGMENT_ATTR": ["imsi","city_code","city_name"]
     },
-    "hashKeys": ["imsi","live_lac","area_code","serial_number","age_level","sex"],
-    "handlerClass" : "com.asiainfo.codis.actions.AreaInfoAssemblyImpl"
+    "hashFields": ["city_code","city_name"],
+    "handlerClass": "com.asiainfo.codis.actions.CityInfoAssemblyImpl"
   }
 ]
-
