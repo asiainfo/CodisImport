@@ -30,7 +30,7 @@ public class AreaInfoAssemblyImpl extends MultiAssemblyImpl {
                 }
                 else if (hashKey.equals("sub_area_code") ){
                     if (StringUtils.startsWithIgnoreCase(hashValue, "A")){
-                        values.put("security_sub_area", hashValue);
+                        values.put("security_area", hashValue);
                     }
                     else {
                         continue;

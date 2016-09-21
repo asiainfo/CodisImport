@@ -56,9 +56,6 @@
 		</dependency>
 	</dependencies>
 
-
-	
-
 	<build>
 		<plugins>
 			<plugin>
@@ -93,19 +90,7 @@
 		        </executions>
 		      </plugin>
 
-<!-- 			<plugin> -->
-<!-- 		        <artifactId>maven-dependency-plugin</artifactId> -->
-<!-- 		        <configuration> -->
-<!-- 		          <outputDirectory>${basedir}/target/lib</outputDirectory> -->
-<!-- 		          <excludeTransitive>false</excludeTransitive> -->
-<!-- 		          <stripVersion>true</stripVersion> -->
-<!-- 		        </configuration> -->
-<!-- 		      </plugin> -->
-
-
-
-
-			<plugin>  
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>  
 				<artifactId>maven-resources-plugin</artifactId>  
 				<version>2.6</version>  
@@ -132,31 +117,6 @@
 				</executions>  
 			</plugin>
 
-
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-shade-plugin</artifactId>
-				<version>2.2</version>
-				<configuration>
-					<!-- put your configurations here -->
-					<transformers>
-						<transformer implementation = "org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-							<mainClass>com.asiainfo.codis.ImportData</mainClass>
-						</transformer>
-					</transformers>
-
-				</configuration>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>shade</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-
-			
 		</plugins>
 	</build>
 	

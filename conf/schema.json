@@ -1,11 +1,20 @@
 [
   {
-    "keyPrefix": "city_info",
+    "keyPrefix": "user_base_info",
     "foreignKeys": ["imsi"],
     "sourceTableSchema": {
-      "TD_IMSI_SEGMENT_ATTR": ["imsi","city_code","city_name"]
+      "TP_IMSI_LIVE_WORK_MON": ["acyc_id","imsi","live_lac","area_code","work_lac","work_cellid"],
+      "TP_IMSI_USER_INFO_DAY": ["stat_date","imsi","serial_number","age_level","sex","eparchy_id","city_code","pspt_prov_code","pspt_eparchy_id","fee_level"]
     },
-    "hashFields": ["city_code","city_name"],
-    "handlerClass": "com.asiainfo.codis.actions.CityInfoAssemblyImpl"
+    "hashFields": ["acyc_id","live_lac","area_code","work_lac","work_cellid","stat_date","imsi","serial_number","age_level","sex","eparchy_id","city_code","pspt_prov_code","pspt_eparchy_id","fee_level"]
+  },
+  {
+    "keyPrefix": "area_info",
+    "foreignKeys": ["lac", "cell_id"],
+    "sourceTableSchema": {
+      "TD_APP_SCENE_AREA_LACCELL": ["scene_code","scene_name","area_code","area_name","sub_area_code","sub_area_name","lac","cell_id","net_type","mstation_tag","eparchy_id","eparchy_name","city_code","city_name","update_date","scenic_area_type","area","longitude","latitude","alarm_value"]
+    },
+    "hashFields": ["scene_code","area_code","sub_area_code","net_type","eparchy_id","city_code","area","longitude","latitude"],
+    "handlerClass": "com.asiainfo.codis.actions.AreaInfoAssemblyImpl"
   }
 ]

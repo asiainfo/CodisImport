@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.*;
+import java.nio.file.Paths;
 import java.util.*;
 
 /**
@@ -27,21 +28,24 @@ public class CodisConfiguration {
     public final static boolean DEFAULT_SPLIT_FILE_ENABLE = false;
     public final static String CODIS_INPUT_FILE_PATH = "codis.input.file.path";
     public static String CONF_DIR = "";
+    public static String HOME_PATH = "";
 
 
 
     static {
+        DEFAULT_CODIS_CLIENT_THREAD_COUNT = Runtime.getRuntime().availableProcessors();
+
+        HOME_PATH = Paths.get(CodisConfiguration.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParent().getParent().toString();
+
+        CONF_DIR = HOME_PATH + File.separator + "conf" + File.separator;
+
         try {
-            properties.load(new FileInputStream("conf" + File.separator + CONFIG_FILE));
+            properties.load(new FileInputStream(HOME_PATH + File.separator + "conf" + File.separator + CONFIG_FILE));
         } catch (FileNotFoundException fnf) {
             logger.error("No configuration file " + CONFIG_FILE + " found in classpath.", fnf);
         } catch (IOException ie) {
             logger.error("Can't read configuration file " + CONFIG_FILE, ie);
         }
-
-        DEFAULT_CODIS_CLIENT_THREAD_COUNT = Runtime.getRuntime().availableProcessors();
-
-        CONF_DIR = System.getProperty("user.dir") + File.separator + "conf" + File.separator;
     }
 
     public static Properties getProperty(){

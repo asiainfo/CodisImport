@@ -22,11 +22,11 @@ import java.util.List;
  * Created by peng on 16/8/31.
  */
 public class ImportData {
-    private static Logger logger = Logger.getLogger(CodisConfiguration.class);
+    private static Logger logger = Logger.getLogger(ImportData.class);
 
     public static void main(String[] args) {
         if (args.length != 1) {
-            System.err.println("Usage: ImportData <schema configuration path>");
+            System.err.println("Usage: import.sh <schema configuration path>");
             System.exit(1);
         }
 
@@ -36,6 +36,11 @@ public class ImportData {
             System.err.println("Can not find file '" + schemaPath + "'.");
             System.exit(2);
         }
+
+
+        String logDir = CodisConfiguration.HOME_PATH + File.separator + "logs";
+
+        System.setProperty("codis_import_log_path", logDir);
 
         DOMConfigurator.configure(CodisConfiguration.CONF_DIR + "log4j.xml");
 
