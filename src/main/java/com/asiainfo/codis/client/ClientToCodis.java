@@ -1,16 +1,15 @@
 package com.asiainfo.codis.client;
 
 import com.asiainfo.codis.schema.CodisHash;
-import com.asiainfo.codis.schema.DataSchema;
 import com.asiainfo.conf.CodisConfiguration;
+import io.codis.jodis.JedisResourcePool;
+import io.codis.jodis.RoundRobinJedisPool;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.PrefixFileFilter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.log4j.Logger;
 import redis.clients.jedis.*;
-import redis.clients.util.Hashing;
-import redis.clients.util.Sharded;
 
 import java.io.File;
 import java.io.IOException;
@@ -55,7 +54,10 @@ public class ClientToCodis {
             shards.add(new JedisShardInfo(_address[0], NumberUtils.toInt(_address[1])));
         }
 
-        ShardedJedisPool pool = new ShardedJedisPool(config, shards);
+        JedisResourcePool pool = RoundRobinJedisPool.create()
+                .poolConfig(config)
+                .curatorClient(CodisConfiguration.getProperty().getProperty(CodisConfiguration.ZK_ADDRESS), CodisConfiguration.getInt(CodisConfiguration.ZK_SESSION_TIMEOUT_MS, 30000))
+                .zkProxyDir(CodisConfiguration.getProperty().getProperty(CodisConfiguration.ZK_PROXY_DIR)).build();
 
         ForkJoinPool fjpool = new ForkJoinPool(CodisConfiguration.getInt(CodisConfiguration.CODIS_CLIENT_THREAD_COUNT, CodisConfiguration.DEFAULT_CODIS_CLIENT_THREAD_COUNT));
 
@@ -88,7 +90,11 @@ public class ClientToCodis {
         }
 
 
-        pool.close();
+        try {
+            pool.close();
+        } catch (IOException e) {
+            logger.error("JedisResourcePool close failed", e);
+        }
 
         long endTime = System.currentTimeMillis();
 

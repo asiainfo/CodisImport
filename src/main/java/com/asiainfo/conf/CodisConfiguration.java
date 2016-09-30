@@ -30,6 +30,10 @@ public class CodisConfiguration {
     public static String CONF_DIR = "";
     public static String HOME_PATH = "";
 
+    public final static String ZK_ADDRESS = "zk.address";
+    public final static String ZK_SESSION_TIMEOUT_MS = "zk.session.timeout-ms";
+    public final static String ZK_PROXY_DIR = "zk.proxy.dir";
+
 
 
     static {

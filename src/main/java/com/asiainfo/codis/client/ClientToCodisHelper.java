@@ -2,15 +2,12 @@ package com.asiainfo.codis.client;
 
 import com.asiainfo.codis.actions.Assembly;
 import com.asiainfo.codis.schema.CodisHash;
-import com.asiainfo.codis.schema.DataSchema;
 import com.asiainfo.conf.CodisConfiguration;
-import com.asiainfo.util.CommonUtil;
+import io.codis.jodis.JedisResourcePool;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import redis.clients.jedis.*;
 
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.RecursiveAction;
@@ -21,7 +18,7 @@ import java.util.concurrent.RecursiveAction;
 public class ClientToCodisHelper extends RecursiveAction {
     private Logger logger = Logger.getLogger(ClientToCodisHelper.class);
 
-    private ShardedJedisPool jedisPool;
+    private JedisResourcePool jedisPool;
     private List<String> dataList;
 
     private CodisHash codisHash;
@@ -30,7 +27,7 @@ public class ClientToCodisHelper extends RecursiveAction {
     private int start;
     private int end;
 
-    public ClientToCodisHelper(List<String> dataList, CodisHash codisHash, String sourceTableName, ShardedJedisPool jedisPool, int start, int end) {
+    public ClientToCodisHelper(List<String> dataList, CodisHash codisHash, String sourceTableName, JedisResourcePool jedisPool, int start, int end) {
         this.dataList = dataList;
         this.codisHash = codisHash;
         this.jedisPool = jedisPool;
@@ -52,8 +49,15 @@ public class ClientToCodisHelper extends RecursiveAction {
             this.invokeAll(left, right);
 
         } else {
-            ShardedJedis shardedJedis = jedisPool.getResource();
-            ShardedJedisPipeline pipeline = shardedJedis.pipelined();
+            Jedis jedis;
+            try {
+                jedis = jedisPool.getResource();
+            }catch (Exception e){
+                logger.error("Can not get resource from JedisResourcePool.", e);
+                return;
+            }
+            //Jedis jedis = jedisPool.getResource();
+            Pipeline pipeline = jedis.pipelined();
             int brokenRowNum = 0;
 
             logger.debug("Start from " + start + " to " + end + " in " + sourceTableName);
@@ -93,7 +97,7 @@ public class ClientToCodisHelper extends RecursiveAction {
                         for (Map.Entry<String, Map<String, String>> entry : hmset.entrySet()) {
                             String hmsetKey = entry.getKey();
                             Map<String, String> hmsetValue = entry.getValue();
-                            shardedJedis.hmset(hmsetKey, hmsetValue);
+                            jedis.hmset(hmsetKey, hmsetValue);
                         }
 
                     } else {
@@ -110,7 +114,7 @@ public class ClientToCodisHelper extends RecursiveAction {
 
 
             pipeline.syncAndReturnAll();
-            shardedJedis.close();
+            jedis.close();
         }
     }
 }
