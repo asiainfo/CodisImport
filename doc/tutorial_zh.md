@@ -21,13 +21,16 @@ Hash的key以及所需要的field。
 |codis.input.file.path|外部数据存放路径|
 |split.file.enable|是否将外部数据切分处理，此功能是针对一个输入源文件太大，为提高效率切分成小文件并行处理，默认false，不开启此功能|
 |codis.maximum-operation-byte|每个切分文件的大小，仅当split.file.enable为true时生效|
+|zk.address|jodis用来连接zk的地址|
+|zk.session.timeout-ms|jodis连接zk的超时时间|
+|zk.proxy.dir|codis的proxy在zk中的存储路径，jodis创建连接时候使用|
 
 ###schema.json
 此配置文件为json格式，以下面的配置为例说明一下主要的配置项
 
 例如有一个外部表叫做TD_IMSI_SEGMENT_ATTR
 
-| imsi_segment | city_code |city_name|
+| imsi | city_code |city_name|
 |:----:|:----:|:----:|
 |469527|029|西安|
 |469528|010|北京|
@@ -46,7 +49,7 @@ HMSET city_info:469528 city_code "010" city_name "北京"
     "keyPrefix": "city_info",
     "foreignKeys": ["imsi"],
     "sourceTableSchema": {
-      "TD_IMSI_SEGMENT_ATTR": ["imsi","city_code","city_name"]
+      "TD_IMSI_SEGMENT_ATTR": ["city_code","city_name"]
     },
     "hashFields": ["city_code","city_name"]
   }
