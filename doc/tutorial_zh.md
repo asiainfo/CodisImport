@@ -48,6 +48,7 @@ HMSET city_info:469528 city_code "010" city_name "北京"
   {
     "keyPrefix": "city_info",
     "foreignKeys": ["imsi"],
+    "keySeparator": ":",
     "sourceTableSchema": {
       "TD_IMSI_SEGMENT_ATTR": ["city_code","city_name"]
     },
@@ -58,7 +59,16 @@ HMSET city_info:469528 city_code "010" city_name "北京"
 那么现在看这个配置就非常清楚了，`keyPrefix`为要生产的Hash的key。`foreignKeys`为外部表的主键，这里可以写多个，用逗号分隔。
 `sourceTableSchema`外部数据源的表的schema，要保证这里指定的字段顺序和数据源的顺序一致。`sourceTableSchema`里面可以配置多个表，但是必须保证
 每个表都是以`foreignKeys`中所指定的字段为主键的。`hashFields`为要从数据源中导入的做为Hash中field的字段，这些字段一定要在`sourceTableSchema`中
-可以找到。cd 
+可以找到。`keySeparator`可以指定`keyPrefix`与`foreignKeys`之间的分隔符，如果不配置，默认为冒号`:`。
+
+`foreignKeys`中可以有多个key，多个key之间的分隔符可以通过`foreignKeysSeparator`指定，如果不配置，默认为下划线`_`
+
+对于合并提取源数据的规则可以根据具体的业务需要配置`handlerClass`参数指定自定义的处理类。如果没有指定，
+会根据`foreignKeys`中值的个数，自动调用默认的处理类。如果`foreignKeys`只有一个key，默认`handlerClass`的
+值是`com.asiainfo.codis.actions.SingleForeignKeysAssemblyImpl`；如果多于一个key，默认值为
+`com.asiainfo.codis.actions.MultiAssemblyImpl`。
 
 使用方法
 --------
+
+运行`import.sh <schema configuration path>`，参数为schema.json配置文件路径。
