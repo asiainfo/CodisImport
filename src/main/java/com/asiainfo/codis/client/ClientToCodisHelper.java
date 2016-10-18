@@ -64,10 +64,12 @@ public class ClientToCodisHelper extends RecursiveAction {
 
             for (int i = start; i <= end; i++) {
 
-                String[] row = dataList.get(i).split(CodisConfiguration.DEFAULT_SEPARATOR);
+                //row的末尾如果是有空值，例如,,切分之后不能忽略空值
+                String[] row = dataList.get(i).split(CodisConfiguration.DEFAULT_SEPARATOR, -1);
 
                 if (row.length != codisHash.getSourceTableSchema().get(sourceTableName).size()) {
                     logger.warn("The row<" + dataList.get(i) + "> is invalid.");
+                    logger.warn("The row length is " + row.length + " and schema is <" + codisHash.getSourceTableSchema().get(sourceTableName) + "> from table " + sourceTableName);
                     brokenRowNum++;
                     continue;
                 }
