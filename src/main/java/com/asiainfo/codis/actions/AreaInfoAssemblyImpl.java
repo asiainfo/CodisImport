@@ -19,24 +19,20 @@ public class AreaInfoAssemblyImpl extends MultiAssemblyImpl {
         for (int j = 0; j < hashKeys.length; j++) {
             String hashKey = hashKeys[j].trim();
             String hashValue = getColumnValueFromSourceTableRow(hashKey);
+            //String scene_code =
             if (hashValue != null) {
 
-                if (hashKey.equals("area_code") ){
-                    if (StringUtils.startsWithIgnoreCase(hashValue, "B")){
-                        values.put("tour_area", hashValue);
-                    }else {
+                if (hashKey.equals("scene_code")){
+                    if (StringUtils.equalsIgnoreCase(hashValue, "A0")){
+                        values.put("tour_area", getColumnValueFromSourceTableRow("area_code"));
+                    }else if (StringUtils.equalsIgnoreCase(hashValue, "B0")){
+                        values.put("security_area", getColumnValueFromSourceTableRow("sub_area_code"));
+                    }else{
                         continue;
                     }
-                }
-                else if (hashKey.equals("sub_area_code") ){
-                    if (StringUtils.startsWithIgnoreCase(hashValue, "A")){
-                        values.put("security_area", hashValue);
-                    }
-                    else {
-                        continue;
-                    }
-                }
-                else{
+                }else if (hashKey.equals("area_code") || hashKey.equals("sub_area_code")){
+                    continue;
+                }else {
                     values.put(hashKey, hashValue);
                 }
             }
